@@ -44,7 +44,7 @@ export interface Key {
   issuedDate: string
   expiredDate: string
   linkedOrderId: string | null
-  marzban: MarzbanKeyData
+  marzban: MarzbanKeyData | null
 }
 
 export interface KeySummary {

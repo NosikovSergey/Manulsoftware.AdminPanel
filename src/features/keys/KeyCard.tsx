@@ -143,14 +143,13 @@ export function KeyCard() {
     return <div className="text-sm text-red-600">Ключ не найден</div>
   }
 
-  const statusMismatch = !statusesMatch(key.status, key.marzban.status)
-  const dateMismatch = !datesMatch(key.expiredDate, key.marzban.expiredDate)
+  const statusMismatch = key.marzban ? !statusesMatch(key.status, key.marzban.status) : false
+  const dateMismatch = key.marzban ? !datesMatch(key.expiredDate, key.marzban.expiredDate) : false
   const hasDiscrepancy = statusMismatch || dateMismatch
 
-  const trafficPercent = Math.min(
-    (key.marzban.usedTrafficGb / key.marzban.totalTrafficGb) * 100,
-    100,
-  )
+  const trafficPercent = key.marzban
+    ? Math.min((key.marzban.usedTrafficGb / key.marzban.totalTrafficGb) * 100, 100)
+    : 0
 
   const anyPending =
     enableMutation.isPending ||
@@ -198,23 +197,27 @@ export function KeyCard() {
           <h3 className="mb-3 text-xs font-semibold uppercase tracking-wide text-gray-400">
             Marzban (live)
           </h3>
-          <div className="space-y-1">
-            <DiscrepancyRow label="Статус" hasDiscrepancy={statusMismatch}>
-              {MARZBAN_STATUS_LABEL[key.marzban.status]}
-            </DiscrepancyRow>
-            <DiscrepancyRow label="Истекает" hasDiscrepancy={dateMismatch}>
-              {formatDate(key.marzban.expiredDate)}
-            </DiscrepancyRow>
-            <div className="flex gap-2 rounded px-2 py-1 text-sm">
-              <span className="w-32 shrink-0 text-gray-500">Трафик</span>
-              <div className="flex-1 space-y-1">
-                <span className="font-medium tabular-nums">
-                  {key.marzban.usedTrafficGb.toFixed(1)} / {key.marzban.totalTrafficGb} ГБ
-                </span>
-                <Progress value={trafficPercent} className="h-2" />
+          {key.marzban ? (
+            <div className="space-y-1">
+              <DiscrepancyRow label="Статус" hasDiscrepancy={statusMismatch}>
+                {MARZBAN_STATUS_LABEL[key.marzban.status]}
+              </DiscrepancyRow>
+              <DiscrepancyRow label="Истекает" hasDiscrepancy={dateMismatch}>
+                {formatDate(key.marzban.expiredDate)}
+              </DiscrepancyRow>
+              <div className="flex gap-2 rounded px-2 py-1 text-sm">
+                <span className="w-32 shrink-0 text-gray-500">Трафик</span>
+                <div className="flex-1 space-y-1">
+                  <span className="font-medium tabular-nums">
+                    {key.marzban.usedTrafficGb.toFixed(1)} / {key.marzban.totalTrafficGb} ГБ
+                  </span>
+                  <Progress value={trafficPercent} className="h-2" />
+                </div>
               </div>
             </div>
-          </div>
+          ) : (
+            <p className="text-sm text-gray-400">Данные недоступны</p>
+          )}
         </div>
       </div>
 

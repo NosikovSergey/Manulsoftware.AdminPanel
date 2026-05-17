@@ -28,12 +28,9 @@ export function UsersPage() {
   const [query, setQuery] = useState('')
   const debouncedQuery = useDebounce(query.trim(), 300)
 
-  const isQueryReady = debouncedQuery.length >= 2
-
   const { data, isLoading, isError } = useQuery({
     queryKey: ['users', debouncedQuery],
     queryFn: () => searchUsers(debouncedQuery),
-    enabled: isQueryReady,
   })
 
   return (
@@ -51,76 +48,68 @@ export function UsersPage() {
         />
       </div>
 
-      {query.trim().length > 0 && query.trim().length < 2 && (
-        <p className="text-sm text-gray-400">Введите минимум 2 символа</p>
+      {isLoading && (
+        <p className="text-sm text-gray-400">Загрузка...</p>
       )}
 
-      {isQueryReady && (
-        <>
-          {isLoading && (
-            <p className="text-sm text-gray-400">Поиск...</p>
-          )}
+      {isError && (
+        <p className="text-sm text-red-600">Не удалось загрузить результаты</p>
+      )}
 
-          {isError && (
-            <p className="text-sm text-red-600">Не удалось загрузить результаты</p>
-          )}
+      {data && data.length === 0 && (
+        <p className="text-sm text-gray-400">Ничего не найдено</p>
+      )}
 
-          {data && data.length === 0 && (
-            <p className="text-sm text-gray-400">Ничего не найдено</p>
-          )}
-
-          {data && data.length > 0 && (
-            <div className="rounded-md border">
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Имя</TableHead>
-                    <TableHead>Username</TableHead>
-                    <TableHead>Telegram ID</TableHead>
-                    <TableHead>Баланс</TableHead>
-                    <TableHead>Статус</TableHead>
-                    <TableHead>Дата регистрации</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody>
-                  {data.map((user) => (
-                    <TableRow
-                      key={user.id}
-                      className="cursor-pointer hover:bg-gray-50"
-                      onClick={() => navigate(`/users/${user.id}`)}
-                    >
-                      <TableCell className="font-medium">
-                        {formatFullName(user.firstName, user.lastName)}
-                      </TableCell>
-                      <TableCell className="text-gray-500">
-                        {user.username ? `@${user.username}` : '—'}
-                      </TableCell>
-                      <TableCell className="tabular-nums text-gray-500">
-                        {user.id}
-                      </TableCell>
-                      <TableCell
-                        className={cn(
-                          'tabular-nums font-medium',
-                          user.balance < 0 ? 'text-red-600' : 'text-gray-900',
-                        )}
-                      >
-                        {formatAmount(user.balance)}
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={STATUS_VARIANT[user.status]}>
-                          {USER_STATUS_LABEL[user.status]}
-                        </Badge>
-                      </TableCell>
-                      <TableCell className="text-gray-500">
-                        {formatDate(user.dateJoined)}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </div>
-          )}
-        </>
+      {data && data.length > 0 && (
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Имя</TableHead>
+                <TableHead>Username</TableHead>
+                <TableHead>Telegram ID</TableHead>
+                <TableHead>Баланс</TableHead>
+                <TableHead>Статус</TableHead>
+                <TableHead>Дата регистрации</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {data.map((user) => (
+                <TableRow
+                  key={user.id}
+                  className="cursor-pointer hover:bg-gray-50"
+                  onClick={() => navigate(`/users/${user.id}`)}
+                >
+                  <TableCell className="font-medium">
+                    {formatFullName(user.firstName, user.lastName)}
+                  </TableCell>
+                  <TableCell className="text-gray-500">
+                    {user.username ? `@${user.username}` : '—'}
+                  </TableCell>
+                  <TableCell className="tabular-nums text-gray-500">
+                    {user.id}
+                  </TableCell>
+                  <TableCell
+                    className={cn(
+                      'tabular-nums font-medium',
+                      user.balance < 0 ? 'text-red-600' : 'text-gray-900',
+                    )}
+                  >
+                    {formatAmount(user.balance)}
+                  </TableCell>
+                  <TableCell>
+                    <Badge variant={STATUS_VARIANT[user.status]}>
+                      {USER_STATUS_LABEL[user.status]}
+                    </Badge>
+                  </TableCell>
+                  <TableCell className="text-gray-500">
+                    {formatDate(user.dateJoined)}
+                  </TableCell>
+                </TableRow>
+              ))}
+            </TableBody>
+          </Table>
+        </div>
       )}
     </div>
   )

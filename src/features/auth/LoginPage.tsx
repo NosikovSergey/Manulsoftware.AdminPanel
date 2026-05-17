@@ -4,6 +4,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
+import { HTTPError } from 'ky'
 import { login } from '@/api/auth'
 
 const schema = z.object({
@@ -28,8 +29,16 @@ export function LoginPage() {
       const me = await login(data.login, data.password)
       queryClient.setQueryData(['me'], me)
       navigate('/users', { replace: true })
-    } catch {
-      setServerError('Неверный логин или пароль')
+    } catch (err) {
+      if (err instanceof HTTPError) {
+        if (err.response.status === 401) {
+          setServerError('Неверный логин или пароль')
+        } else {
+          setServerError(`Ошибка сервера: ${err.response.status}`)
+        }
+      } else {
+        setServerError('Не удалось подключиться к серверу. Проверьте CORS и доступность бэкенда.')
+      }
     }
   }
 
