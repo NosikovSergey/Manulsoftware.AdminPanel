@@ -1,5 +1,7 @@
+import { useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { HTTPError } from 'ky'
 import { getTransaction, rollbackTransaction } from '@/api/transactions'
 import { getUser } from '@/api/users'
 import { useBreadcrumbChain } from '@/hooks/usePageTitle'
@@ -36,6 +38,7 @@ export function TransactionCard() {
   const { transactionId } = useParams<{ transactionId: string }>()
   const queryClient = useQueryClient()
   const { confirm, dialogState, handleConfirm, handleCancel } = useConfirmDialog()
+  const [rollbackError, setRollbackError] = useState<string | null>(null)
 
   const { data: transaction, isLoading, isError } = useQuery({
     queryKey: ['transaction', transactionId],
@@ -72,7 +75,17 @@ export function TransactionCard() {
       `${formatAmount(transaction!.amount)} будут вычтены из баланса пользователя. Баланс может уйти в минус.`,
     )
     if (!ok) return
-    await rollbackMutation.mutateAsync()
+    setRollbackError(null)
+    try {
+      await rollbackMutation.mutateAsync()
+    } catch (err) {
+      if (err instanceof HTTPError) {
+        const body = await err.response.json<{ error: string }>()
+        setRollbackError(body.error)
+      } else {
+        setRollbackError('Произошла ошибка. Попробуйте ещё раз.')
+      }
+    }
   }
 
   if (isLoading) {
@@ -131,15 +144,20 @@ export function TransactionCard() {
       </div>
 
       {canRollback && (
-        <div className="flex gap-2">
-          <Button
-            variant="outline"
-            size="sm"
-            disabled={rollbackMutation.isPending}
-            onClick={handleRollback}
-          >
-            Откатить транзакцию
-          </Button>
+        <div className="space-y-2">
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              disabled={rollbackMutation.isPending}
+              onClick={handleRollback}
+            >
+              Откатить транзакцию
+            </Button>
+          </div>
+          {rollbackError && (
+            <p className="text-sm text-red-600">{rollbackError}</p>
+          )}
         </div>
       )}
 
