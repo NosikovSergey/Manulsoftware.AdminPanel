@@ -3,7 +3,7 @@ import { api } from '@/lib/http'
 import type { AdminMe } from '@/types'
 
 // Отдельный инстанс без редиректа — для проверки сессии при старте
-const baseUrl = import.meta.env.VITE_API_URL as string
+const baseUrl = (import.meta.env.VITE_API_URL as string) || ''
 
 export async function getMe(): Promise<AdminMe | null> {
   const response = await ky.get(`${baseUrl}/api/auth/me`, {
