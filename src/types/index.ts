@@ -6,7 +6,7 @@ export type OrderStatus = 'created' | 'paid' | 'issued' | 'expired' | 'canceled'
 
 export type KeyStatus = 'active' | 'disabled' | 'expired'
 
-export type MarzbanStatus = 'active' | 'on_hold' | 'expired' | 'limited'
+export type MarzbanStatus = 'active' | 'disabled' | 'expired' | 'limited'
 
 export type TransactionVisualType = 'deposit' | 'withdrawal' | 'refund' | 'rollback'
 
@@ -58,7 +58,7 @@ export interface Order {
   id: string
   userId: number
   tariffDuration: TariffDuration
-  amount: number
+  amount: number | null
   status: OrderStatus
   createdAt: string
   expiredAt: string | null

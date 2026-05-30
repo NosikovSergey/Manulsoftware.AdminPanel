@@ -20,7 +20,7 @@ import type { KeyStatus, MarzbanStatus, TariffDuration } from '@/types'
 // Соответствие между нашими статусами и статусами Marzban
 const EXPECTED_MARZBAN: Record<KeyStatus, MarzbanStatus[]> = {
   active: ['active'],
-  disabled: ['on_hold'],
+  disabled: ['disabled'],
   expired: ['expired', 'limited'],
 }
 

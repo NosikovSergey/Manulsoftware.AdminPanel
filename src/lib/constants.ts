@@ -30,7 +30,7 @@ export const KEY_STATUS_VARIANT: Record<string, 'success' | 'error' | 'secondary
 
 export const MARZBAN_STATUS_LABEL: Record<string, string> = {
   active: 'Active',
-  on_hold: 'OnHold',
+  disabled: 'Disabled',
   expired: 'Expired',
   limited: 'Limited (трафик исчерпан)',
 }

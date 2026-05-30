@@ -69,7 +69,7 @@ export function OrderCard() {
 
   async function handleRefund() {
     const ok = await confirm(
-      `Ключ будет отключён, ${formatAmount(order!.amount)} будут возвращены на баланс пользователя.`,
+      `Ключ будет отключён, ${order!.amount !== null ? formatAmount(order!.amount) : 'средства'} будут возвращены на баланс пользователя.`,
     )
     if (!ok) return
     await refundMutation.mutateAsync()
@@ -105,7 +105,7 @@ export function OrderCard() {
           <InfoRow label="Тариф">
             {TARIFF_DURATION_LABEL[order.tariffDuration] ?? order.tariffDuration}
           </InfoRow>
-          <InfoRow label="Сумма оплаты">{formatAmount(order.amount)}</InfoRow>
+          <InfoRow label="Сумма оплаты">{order.amount !== null ? formatAmount(order.amount) : '—'}</InfoRow>
           <InfoRow label="Дата создания">{formatDate(order.createdAt)}</InfoRow>
           <InfoRow label="Истекает">
             {order.expiredAt ? formatDate(order.expiredAt) : '—'}
