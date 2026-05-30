@@ -38,8 +38,13 @@ export const MARZBAN_STATUS_LABEL: Record<string, string> = {
 export const TRANSACTION_TYPE_LABEL: Record<string, string> = {
   deposit: 'Пополнение',
   withdrawal: 'Списание',
-  refund: 'Возврат',
-  rollback: 'Откат пополнения',
+}
+
+export const TRANSACTION_STATUS_VARIANT: Record<string, 'secondary' | 'info' | 'success' | 'error' | 'warning'> = {
+  pending: 'info',
+  committed: 'success',
+  canceled: 'error',
+  refunded: 'warning',
 }
 
 export const TRANSACTION_STATUS_LABEL: Record<string, string> = {

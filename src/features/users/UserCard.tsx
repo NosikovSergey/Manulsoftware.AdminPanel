@@ -40,12 +40,13 @@ import {
   ORDER_STATUS_VARIANT,
   TRANSACTION_TYPE_LABEL,
   TRANSACTION_STATUS_LABEL,
+  TRANSACTION_STATUS_VARIANT,
 } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import type { TransactionVisualType } from '@/types'
+import type { TransactionType } from '@/types'
 
-function transactionAmountSign(type: TransactionVisualType): '+' | '−' {
-  return type === 'deposit' || type === 'refund' ? '+' : '−'
+function transactionAmountSign(type: TransactionType): '+' | '−' {
+  return type === 'deposit' ? '+' : '−'
 }
 
 export function UserCard() {
@@ -361,20 +362,22 @@ export function UserCard() {
                       <TableCell className="text-gray-500">
                         {formatDate(tx.date)}
                       </TableCell>
-                      <TableCell>{TRANSACTION_TYPE_LABEL[tx.visualType]}</TableCell>
+                      <TableCell>{TRANSACTION_TYPE_LABEL[tx.type]}</TableCell>
                       <TableCell
                         className={cn(
                           'tabular-nums font-medium',
-                          tx.visualType === 'deposit' || tx.visualType === 'refund'
+                          tx.type === 'deposit'
                             ? 'text-green-600'
                             : 'text-gray-900',
                         )}
                       >
-                        {transactionAmountSign(tx.visualType)}
+                        {transactionAmountSign(tx.type)}
                         {formatAmount(tx.amount)}
                       </TableCell>
-                      <TableCell className="text-gray-500">
-                        {TRANSACTION_STATUS_LABEL[tx.status]}
+                      <TableCell>
+                        <Badge variant={TRANSACTION_STATUS_VARIANT[tx.status]}>
+                          {TRANSACTION_STATUS_LABEL[tx.status]}
+                        </Badge>
                       </TableCell>
                     </TableRow>
                   ))}

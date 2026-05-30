@@ -3,7 +3,6 @@ import { useParams, Link } from 'react-router-dom'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { AlertTriangle } from 'lucide-react'
 import { getKey, enableKey, disableKey, extendKey, restoreKey } from '@/api/keys'
-import { getOrder } from '@/api/orders'
 import { getUser } from '@/api/users'
 import { useBreadcrumbChain } from '@/hooks/usePageTitle'
 import { useConfirmDialog } from '@/hooks/useConfirmDialog'
@@ -12,8 +11,8 @@ import { ExtendKeyDialog } from './ExtendKeyDialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Progress } from '@/components/ui/progress'
-import { formatFullName, formatDate, TARIFF_DURATION_LABEL } from '@/lib/formatters'
-import { KEY_STATUS_LABEL, KEY_STATUS_VARIANT, MARZBAN_STATUS_LABEL, ORDER_STATUS_LABEL, ORDER_STATUS_VARIANT } from '@/lib/constants'
+import { formatFullName, formatDate } from '@/lib/formatters'
+import { KEY_STATUS_LABEL, KEY_STATUS_VARIANT, MARZBAN_STATUS_LABEL } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 import type { KeyStatus, MarzbanStatus, TariffDuration } from '@/types'
 
@@ -78,12 +77,6 @@ export function KeyCard() {
     queryKey: ['user', key?.userId],
     queryFn: () => getUser(key!.userId),
     enabled: key !== undefined,
-  })
-
-  const { data: linkedOrder } = useQuery({
-    queryKey: ['order', key?.linkedOrderId],
-    queryFn: () => getOrder(key!.linkedOrderId!),
-    enabled: key?.linkedOrderId != null,
   })
 
   // Хлебные крошки: Пользователи > Иван Петров > Ключ #42
@@ -243,34 +236,6 @@ export function KeyCard() {
           </Button>
         )}
       </div>
-
-      {/* Связанный заказ */}
-      {key.linkedOrderId && (
-        <div className="rounded-lg border bg-white p-4 text-sm">
-          <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-gray-400">
-            Связанный заказ
-          </p>
-          <Link to={`/orders/${key.linkedOrderId}`} className="group block space-y-1 hover:no-underline">
-            {linkedOrder ? (
-              <div className="flex flex-wrap items-center gap-3">
-                <span className="font-medium text-gray-900 group-hover:text-blue-600">
-                  {TARIFF_DURATION_LABEL[linkedOrder.tariffDuration] ?? linkedOrder.tariffDuration}
-                </span>
-                <Badge variant={ORDER_STATUS_VARIANT[linkedOrder.status]}>
-                  {ORDER_STATUS_LABEL[linkedOrder.status]}
-                </Badge>
-                {linkedOrder.expiredAt && (
-                  <span className="text-gray-500">
-                    до {formatDate(linkedOrder.expiredAt)}
-                  </span>
-                )}
-              </div>
-            ) : (
-              <span className="text-blue-600 hover:underline">Открыть заказ</span>
-            )}
-          </Link>
-        </div>
-      )}
 
       {/* Ссылка на пользователя */}
       <div className="text-sm">

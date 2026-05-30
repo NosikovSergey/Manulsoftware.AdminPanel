@@ -8,7 +8,7 @@ export type KeyStatus = 'active' | 'disabled' | 'expired'
 
 export type MarzbanStatus = 'active' | 'disabled' | 'expired' | 'limited'
 
-export type TransactionVisualType = 'deposit' | 'withdrawal' | 'refund' | 'rollback'
+export type TransactionType = 'deposit' | 'withdrawal'
 
 export type TransactionStatus = 'pending' | 'committed' | 'canceled' | 'refunded'
 
@@ -43,7 +43,6 @@ export interface Key {
   status: KeyStatus
   issuedDate: string
   expiredDate: string
-  linkedOrderId: string | null
   marzban: MarzbanKeyData | null
 }
 
@@ -77,7 +76,7 @@ export interface Transaction {
   id: string
   userId: number
   date: string
-  visualType: TransactionVisualType
+  type: TransactionType
   amount: number
   status: TransactionStatus
 }
@@ -85,7 +84,7 @@ export interface Transaction {
 export interface TransactionSummary {
   id: string
   date: string
-  visualType: TransactionVisualType
+  type: TransactionType
   amount: number
   status: TransactionStatus
 }

@@ -10,19 +10,13 @@ import { ConfirmDialog } from '@/components/shared/ConfirmDialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { formatFullName, formatDateTime, formatAmount } from '@/lib/formatters'
-import { TRANSACTION_TYPE_LABEL, TRANSACTION_STATUS_LABEL } from '@/lib/constants'
+import { TRANSACTION_TYPE_LABEL, TRANSACTION_STATUS_LABEL, TRANSACTION_STATUS_VARIANT } from '@/lib/constants'
 import { cn } from '@/lib/utils'
-import type { TransactionVisualType } from '@/types'
+import type { TransactionType } from '@/types'
 
-const TRANSACTION_STATUS_VARIANT: Record<string, 'secondary' | 'info' | 'success' | 'error' | 'warning'> = {
-  pending: 'info',
-  committed: 'success',
-  canceled: 'error',
-  refunded: 'warning',
-}
 
-function amountSign(type: TransactionVisualType): '+' | '−' {
-  return type === 'deposit' || type === 'refund' ? '+' : '−'
+function amountSign(type: TransactionType): '+' | '−' {
+  return type === 'deposit' ? '+' : '−'
 }
 
 function InfoRow({ label, children }: { label: string; children: React.ReactNode }) {
@@ -96,7 +90,7 @@ export function TransactionCard() {
     return <div className="text-sm text-red-600">Транзакция не найдена</div>
   }
 
-  const canRollback = transaction.visualType === 'deposit' && transaction.status === 'committed'
+  const canRollback = transaction.type === 'deposit' && transaction.status === 'committed'
 
   return (
     <div className="space-y-6">
@@ -113,18 +107,16 @@ export function TransactionCard() {
             <span className="font-mono text-xs text-gray-600">{transaction.id}</span>
           </InfoRow>
           <InfoRow label="Тип">
-            {TRANSACTION_TYPE_LABEL[transaction.visualType]}
+            {TRANSACTION_TYPE_LABEL[transaction.type]}
           </InfoRow>
           <InfoRow label="Сумма">
             <span
               className={cn(
                 'tabular-nums',
-                transaction.visualType === 'deposit' || transaction.visualType === 'refund'
-                  ? 'text-green-600'
-                  : 'text-gray-900',
+                transaction.type === 'deposit' ? 'text-green-600' : 'text-gray-900',
               )}
             >
-              {amountSign(transaction.visualType)}
+              {amountSign(transaction.type)}
               {formatAmount(transaction.amount)}
             </span>
           </InfoRow>
